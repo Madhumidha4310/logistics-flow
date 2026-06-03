@@ -20,6 +20,7 @@ function SignupPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -28,9 +29,18 @@ function SignupPage() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (password.length < 6) return toast.error("Password must be at least 6 characters");
+
+    if (password.length < 6) {
+      return toast.error("Password must be at least 6 characters");
+    }
+
+    if (password !== confirmPassword) {
+      return toast.error("Passwords do not match");
+    }
+
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -38,9 +48,31 @@ function SignupPage() {
         data: { full_name: fullName },
       },
     });
+
+    if (error) {
+      setLoading(false);
+      return toast.error(error.message);
+    }
+
+    if (data.user?.id) {
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .insert({ id: data.user.id, full_name: fullName });
+
+      if (profileError) {
+        console.error("Failed to create profile:", profileError.message);
+      }
+    }
+
     setLoading(false);
-    if (error) return toast.error(error.message);
-    toast.success("Account created! Check your email to verify.");
+
+    if (data.session) {
+      toast.success("Account created successfully. Redirecting to dashboard...");
+      navigate({ to: "/dashboard" });
+      return;
+    }
+
+    toast.success("Account created! Check your email to verify and then sign in.");
     navigate({ to: "/login" });
   };
 
@@ -66,29 +98,67 @@ function SignupPage() {
               <Label htmlFor="name">Full name</Label>
               <div className="relative">
                 <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input id="name" required value={fullName}
+                <Input
+                  id="name"
+                  required
+                  value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Jane Cooper" className="pl-10" />
+                  placeholder="Jane Cooper"
+                  className="pl-10"
+                />
               </div>
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="email">Work email</Label>
               <div className="relative">
                 <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input id="email" type="email" required value={email}
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@company.com" className="pl-10" />
+                  placeholder="you@company.com"
+                  className="pl-10"
+                />
               </div>
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input id="password" type="password" required minLength={6} value={password}
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  minLength={6}
+                  value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="At least 6 characters" className="pl-10" />
+                  placeholder="At least 6 characters"
+                  className="pl-10"
+                />
               </div>
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password">Confirm password</Label>
+              <div className="relative">
+                <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="confirm-password"
+                  type="password"
+                  required
+                  minLength={6}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Repeat your password"
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
             <Button type="submit" disabled={loading} className="w-full bg-gradient-accent text-white hover:opacity-95">
               {loading ? "Creating account..." : <>Create account <FiArrowRight className="ml-2" /></>}
             </Button>
