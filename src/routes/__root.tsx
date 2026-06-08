@@ -86,6 +86,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: "Enterprise transport, fleet, and logistics management platform with real-time tracking, bookings, and analytics." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Transport Agencies — Modern Fleet & Logistics Platform" },
+      { name: "twitter:description", content: "Enterprise transport, fleet, and logistics management platform with real-time tracking, bookings, and analytics." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2bbb9e2e-1f52-4771-90d0-509b003a3720/id-preview-b7d8d7a9--952651ce-5291-4786-a9fe-91ac556fdc76.lovable.app-1780899859549.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2bbb9e2e-1f52-4771-90d0-509b003a3720/id-preview-b7d8d7a9--952651ce-5291-4786-a9fe-91ac556fdc76.lovable.app-1780899859549.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
