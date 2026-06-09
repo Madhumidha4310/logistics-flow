@@ -1,4 +1,5 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   FiGrid, FiPackage, FiTruck, FiUsers, FiUser, FiMapPin,
   FiCreditCard, FiBarChart2, FiBell, FiSettings, FiShield, FiUserCheck,
@@ -34,7 +35,7 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const { user } = useAuth();
-  const path = useRouterState({ select: (r) => r.location.pathname });
+  const path = usePathname() ?? "/";
   const isActive = (url: string) => path === url;
 
   const renderGroup = (label: string, items: typeof mainItems) => (
@@ -45,10 +46,10 @@ export function AppSidebar() {
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                <Link to={item.url} className="flex items-center gap-3">
+                <a href={item.url} className="flex items-center gap-3">
                   <item.icon className="size-4 shrink-0" />
                   {!collapsed && <span>{item.title}</span>}
-                </Link>
+                </a>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
@@ -60,7 +61,7 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border/50">
-        <Link to="/dashboard" className="flex items-center gap-2 px-2 py-2">
+        <Link href="/dashboard" className="flex items-center gap-2 px-2 py-2">
           <div className="size-8 rounded-lg bg-gradient-accent grid place-items-center text-white shrink-0">
             <FiTruck className="size-4" />
           </div>
